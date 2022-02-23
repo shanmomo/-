@@ -2,9 +2,13 @@
 
 ## --------PHYSICAL_REVIEW C, VOLUME 62, 044601 ———————
 # 重离子类型和能量
-Mp,Zp = 16.0,8.0
-Mt,Zt = 12.0,6.0
-Elab = 132.0 # MeV
+# Mp,Zp = 16.0,8.0
+# Mt,Zt = 12.0,6.0
+# Elab = 132.0 # MeV
+
+Mp,Zp = 4.0,2.0
+Mt,Zt = 90.0,40.0
+Elab = 79.5 # MeV
 
 # 求解范围
 lmax = 200 #最高分波阶数
@@ -40,8 +44,11 @@ end
 
 # 核势
 # Wood-Saxon: [depth(MeV), width_factor(fm), skewness(fm)]
-WS1_V = [282.2, 0.586, 0.978]
-WS1_W = [13.86, 1.183, 0.656]
+# WS1_V = [282.2, 0.586, 0.978]
+# WS1_W = [13.86, 1.183, 0.656]
+
+WS1_V = [141.2, 1.225, 0.821]
+WS1_W = [18.49, 1.575, 0.565]
 
 dVn = WS1_V[1] / Ecm # MeV/Ecm
 rVn = WS1_V[2] * unitlessR #fm
