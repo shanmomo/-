@@ -1,0 +1,19 @@
+O16 + C12 @ 132 MeV;
+NAMELIST
+&FRESCO hcm=0.03 rmatch=100
+	jtmin=0.0 jtmax=100 absend= 0.01
+	thmin=0.00 thmax=180.00 thinc=1.00
+	chans=1 smats=2  xstabl=1
+	elab=132.0  /
+
+&PARTITION namep='O16' massp=16.00 zp=8 namet='C12' masst=12.00 zt=6 qval=-0.000 nex=1  /
+&STATES jp=0.0 bandp=1 ep=0.0000 cpot=1 jt=0.0 bandt=1 et=0.0000  /
+&partition /
+
+&POT kp=1 ap=16.000 at=12.000 rc=1.2  /
+&POT kp=1 type=1 p1=282.2 p2=0.586 p3=0.978 p4=13.86 p5=1.183 p6=0.656  /
+&pot /
+&overlap /
+&coupling /
+
+

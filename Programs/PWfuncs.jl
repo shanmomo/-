@@ -65,14 +65,14 @@ end
 
 ## Scattering Amplitudes and Cross Sections
 
-function fcal(ls, σcs, Sls, η)
+function fcal(η, k, ls, σcs, Sls)
     lm = ls[end]
     ntemp = ((2im * k)^-1) .* (2ls .+ 1) .* cis.(2*σcs) .* (Sls .- 1.0)
     # ctemp = ((2im * k)^-1) .* (2ls .+ 1) .* (exp.(2im.*σcs) .- 1)
     # ttemp = ((2im * k)^-1) .* (2ls .+ 1) .* (Sls.*exp.(2im.*σcs) .- 1)
-    fnlT(θ) = ntemp .* PLv(cos(θ),lm)
-    fnlF(θ) = ntemp .* complex.(PLv(cos(θ),lm)./2,-QLv(cos(θ),lm)./π)
-    fnlN(θ) = ntemp .* complex.(PLv(cos(θ),lm)./2,+QLv(cos(θ),lm)./π)
+    fnlT(θ) = ntemp .* PLv(lm, cos(θ))
+    fnlF(θ) = ntemp .* complex.(PLv(lm,cos(θ))./2,-QLv(lm,cos(θ))./π)
+    fnlN(θ) = ntemp .* complex.(PLv(lm,cos(θ))./2,+QLv(lm,cos(θ))./π)
     # Rutherford cross section
     σR(θ) = (η/(2*k*sin(θ/2)^2))^2
     # Nuclear scattering amplitude
@@ -107,8 +107,8 @@ function ψsc_xy(k, η, lmax, sols)
     function ψsc(x,y)::ComplexF64
         r = hypot(x,y)+eps(Float64)
         c = x/r
-        χl = [(2l+1).*(1im.^l).*(ul(sols[l+1],k*r,l) - coulomb_F(l,η,k*r)  ) for l in 0:lmax]
-        P = PLv(c,lmax)
+        χl = [(2l+1).*(1im.^l).*(ul(sols[l+1],k*r,l) - coulomb_FG(l,η,k*r)[1]  ) for l in 0:lmax]
+        P = PLv(lmax,c)
         return dot(χl,P)
     end
     return ψsc

@@ -30,7 +30,8 @@ rmax = ρmax/k
 
 ## 势函数参数和定义
 # 库伦势, 无量纲半径为参数。也可以使用double-fold类型，注意连续性
-Rc_scale = 1.2 # 库伦势半径因子: fm
+# Rc_scale = 1.2 # 库伦势半径因子: fm
+Rc_scale = 1.3 # 库伦势半径因子: fm
 Rc = Rc_scale * unitlessR
 ρVc = Rc * k
 
