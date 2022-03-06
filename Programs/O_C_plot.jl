@@ -25,8 +25,13 @@ theme(:default) # 绘图风格
 begin
     θgrid   = collect( LinRange(0.001, pi-0.001, 1000) )
     σ_total = abs.(ft.(θgrid) ).^2
-    σ_far   = abs.(fnF.(θgrid)).^2
+    σ_far   = abs.(fcF.(θgrid) .+ fnN.(θgrid)).^2
     σ_near  = abs.(fcN.(θgrid) .+ fnN.(θgrid)).^2
+    σ_c_far = abs.(fcF.(θgrid) ).^2
+    σ_c_near= abs.(fcN.(θgrid) ).^2
+    σ_n_far = abs.(fnF.(θgrid) ).^2
+    σ_n_near= abs.(fnN.(θgrid) ).^2
+    σ_n = abs.(fn.(θgrid) ).^2
     σ_Ru = σR.(θgrid)
 end
 
@@ -50,12 +55,52 @@ begin
     yaxis!(L"\sigma/\sigma_{R}", (2e-6,2),:log)
     plot!(rad2deg.(θgrid), σ_total./σ_Ru,
         labels="Total",lw=2)
+    # plot!(rad2deg.(θgrid), σ_far./σ_Ru,
+    #     labels="Far", ls=:dash)
+    # plot!(rad2deg.(θgrid), σ_near./σ_Ru,
+    #     labels="Near",ls=:dash)
+    plot!(rad2deg.(θgrid), σ_n_far./σ_Ru,
+        labels="Nuclear Far", ls=:dash)
+    plot!(rad2deg.(θgrid), σ_n_near./σ_Ru,
+        labels="Nuclear Near", ls=:dash)
+    # plot!(rad2deg.(θgrid), σ_c_far./σ_Ru,
+    #     labels="Coulomb Far", ls=:dash)
+    # plot!(rad2deg.(θgrid), σ_c_near./σ_Ru,
+    #     labels="Coulomb Near", ls=:dash)
+    plot!(rad2deg.(θgrid), σ_n./σ_Ru,
+        labels="Nuclear", ls=:dash)
+end
+# savefig(p1,"Fig\\O_C_Scatter.svg")
+
+
+begin
+    p1=plot(size = (800,600), minorgrid = true)
+    title!(L"^{16}\mathrm{O}+^{12}\mathrm{C}~~\mathrm{at}~~ E_{\mathrm{lab}}=132.0~\mathrm{MeV}")
+    xaxis!(L"\theta / \mathrm{deg}",(0,180))
+    yaxis!(L"\sigma", (2e-6,1e4),:log)
+    plot!(rad2deg.(θgrid), σ_n,
+        labels="Nuclear",lw=2)
+    plot!(rad2deg.(θgrid), σ_n_far./σ_Ru,
+            labels="Nuclear Far", ls=:dash)
+    plot!(rad2deg.(θgrid), σ_n_near./σ_Ru,
+            labels="Nuclear Near", ls=:dash)
+end
+
+
+
+begin
+p1 = plot(size = (800,600), minorgrid = true)
+    title!(L"^{16}\mathrm{O}+^{12}\mathrm{C}~~\mathrm{at}~~ E_{\mathrm{lab}}=132.0~\mathrm{MeV}")
+    xaxis!(L"\theta / \mathrm{deg}",(0,180))
+    yaxis!(L"\sigma/\sigma_{R}", (2e-6,2),:log)
+    plot!(rad2deg.(θgrid), σ_total./σ_Ru,
+        labels="Total",lw=2)
     plot!(rad2deg.(θgrid), σ_far./σ_Ru,
         labels="Far", ls=:dash)
     plot!(rad2deg.(θgrid), σ_near./σ_Ru,
         labels="Near",ls=:dash)
 end
-savefig(p1,"Fig\\O_C_Scatter.svg")
+
 
 ## 散射过程
 plt_l = 80
