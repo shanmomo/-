@@ -109,7 +109,7 @@ function ψsc_xy(k, η, lmax, sols)
         c = x/r
         χl = [(2l+1).*(1im.^l).*(ul(sols[l+1],k*r,l) - coulomb_FG(l,η,k*r)[1]  ) for l in 0:lmax]
         P = PLv(lmax,c)
-        return dot(χl,P)
+        return sum(χl.*P)
     end
     return ψsc
 end
@@ -120,7 +120,7 @@ end
 #         c = x/(r+eps(Float64))
 #         χl = [(2l+1).*(1im.^l).*(ul(sols[l+1],k*r,l) - coulomb_F(k*r,l,η)  ) for l in 0:lmax]
 #         P = PLv(c,lmax)
-#         return dot(χl,P)
+#         return sum(χl.*P)
 #     end
 #     return uscl
 # end

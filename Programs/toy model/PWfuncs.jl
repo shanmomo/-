@@ -49,6 +49,15 @@ end
     return P
 end
 
+@inline function QLv(l::Int, x::T) where T
+    Q = zeros(T,l+1)
+    Q[1]=log((1+x)/(1-x))/2; Q[2]=x*Q[1]-1
+    for n=3:l+1
+        @inbounds Q[n]=((2n-3)*x*Q[n-1]-(n-2)*Q[n-2])/(n-1)
+    end
+    return Q
+end
+
 ## Initial Condition for Radial Function
 function ul_ini!(l, ρmax, ρ0tolp1)
     u0 = ComplexF64[ρ0tolp1, 1.]
@@ -117,68 +126,24 @@ function scatt(lmax, ρmax, k, Vn;
     return Int64.(ls), ComplexF64.(Sls), sols
 end
 
-# ## Core of The Program
-# function scatt(lmax, η, ρmax, k, Vc, Vn ;
-#                 Sltol=1e-7, ρstep=0.4, ρ0tolp1=0.3, l_adaptive=true)
-#     ls = []
-#     σcs = []
-#     Sls = []
-#     sols = []
-#     for l = 0:lmax
-#         u0, ρspan = ul_ini(l, ρmax, ρ0tolp1)
-#         ul_sol = solve(
-#             ODEProblem(ul_prob!, u0, ρspan, [l, η, k, Vc, Vn]),
-#             TsitPap8();
-#             dt = ρstep,
-#             adaptive = false
-#         )
-#         Sl = ul_match!(ul_sol, l, η)
-#         push!(ls,l)
-#         push!(σcs,σc_cal(l,η))
-#         push!(Sls,Sl)
-#         push!(sols, ul_sol)
-#         if (abs(1-Sl)<Sltol) & (l_adaptive)
-#             break
-#         end
-#     end
-#     return convert.(Int64,ls), convert.(Float64,σcs), convert.(ComplexF64,Sls), sols
-# end
 
 ## Scattering Amplitudes and Cross Sections
-
-# function fcal(k, ls, Sls)
-#     lm = ls[end]
-#     ntemp = ((2im * k)^-1) .* (2ls .+ 1) .* cis.(2*σcs) .* (Sls .- 1.0)
-#     # ctemp = ((2im * k)^-1) .* (2ls .+ 1) .* (exp.(2im.*σcs) .- 1)
-#     # ttemp = ((2im * k)^-1) .* (2ls .+ 1) .* (Sls.*exp.(2im.*σcs) .- 1)
-#     fnlT(θ) = ntemp .* PLv(lm, cos(θ))
-#     fnlF(θ) = ntemp .* complex.(PLv(lm,cos(θ))./2,-QLv(lm,cos(θ))./π)
-#     fnlN(θ) = ntemp .* complex.(PLv(lm,cos(θ))./2,+QLv(lm,cos(θ))./π)
-#     # Rutherford cross section
-#     σR(θ) = (η/(2*k*sin(θ/2)^2))^2
-#     # Nuclear scattering amplitude
-#     fn(θ; sumrange=1:lm+1) = sum(fnlT(θ)[sumrange])
-#     fnF(θ; sumrange=1:lm+1) = sum(fnlF(θ)[sumrange])
-#     fnN(θ; sumrange=1:lm+1) = sum(fnlN(θ)[sumrange])
-#     # Coulomb scattering amplitude
-#     fc(θ) = -η/(2k*sin(θ/2)^2)*exp(-1im*η*log(sin(θ/2)^2)+2im*σcs[1])
-#     S_term(θ) = _₂F₁(1,complex(1,η),complex(2,η),sin(θ/2)^2)
-#     fcN(θ) = fc(θ) * ( (1-exp(-2*π*η)).^(-1) -
-#                     (1im/2π) * sin(θ/2)^complex(2,2η) * S_term(θ) )
-#     fcF(θ) = fc(θ) * (-exp(-2*π*η)) * ( (1-exp(-2*π*η)).^(-1) +
-#                     (1im/2π) * sin(θ/2)^complex(2,2η) * S_term(θ) )
-#     return fn,fnF,fnN,fc,fcF,fcN,ft,σR
-# end
 
 function σ(θ, k, ls, Sls, sols)
     lm = ls[end]
     χl = [(2l+1) .*( Sls[l+1] - 1. ) for l in 0:lm ]
     P = PLv(lm,cos(θ))
-    f = dot(χl,P)/(2im *k)
-    # σR = (η/(2*k*sin(θ/2)^2))^2
-    return abs(f)^2
+    Q = QLv(lm,cos(θ))
+    Q̃ = @.(P/2-1im/π*Q)
+    f = sum(χl .* P) / (2im *k)
+    fF = sum(χl .* Q̃) / (2im *k)
+    fN = sum(χl .* conj.(Q̃)) / (2im *k)
+    # # σR = (η/(2*k*sin(θ/2)^2))^2
+    # fl = sum(χl[1:20].* P[1:20]) / (2im *k)
+    # fg = sum(χl[21:end].* P[21:end]) / (2im *k)
+    return abs(f)^2, abs(fF)^2, abs(fN)^2
+    # return  abs(f)^2, abs(fl)^2, abs(fg)^2
 end
-
 
 ## Interpolation Functions
 
@@ -197,5 +162,5 @@ end
 function σ_r(θ, r, k, Sls, sols, lmax)
         χl = [(2l+1) .*(1im.^l) .*( ul( l, k*r, Sls[l+1], sols[l+1]) - k*r* sphericalbessel_jy(l,k*r)[1] ) for l in 0:lmax ]
         P = PLv(lmax ,cos(θ))
-        return abs.(dot(χl,P)/k).^2
+        return abs.(sum(χl.*P)/k).^2
 end

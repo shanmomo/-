@@ -15,22 +15,25 @@ end
 
 # 与FRESCO计算散射截面对比
 begin
-    p0=plot(size = (800,600), minorgrid = true)
-    title!(L"\alpha+^{90}\mathrm{Zr}~~\mathrm{at}~~ E_{\mathrm{lab}}=79.5~\mathrm{MeV}")
-    xaxis!(L"\theta / \mathrm{deg}",(0,180))
+    p0=plot(size = (800,600), minorgrid = true,
+            legendfontsize = 14, tickfontsize = 12, guidefontsize = 18,
+            framestyle = :box, margins = 3mm)
+    xaxis!(L"\Theta_{\mathrm{c.m.}} (\mathrm{deg})",(0,180))
     yaxis!(L"\sigma/\sigma_{R}", (2e-6,2),:log)
     plot!(rad2deg.(θgrid), σ_total./σ_Ru,
-        labels="This program",lw=2)
-    plot!(θf,σf,labels="FRESCO",ls=:solid,lw=1.5,linealpha=0.8)
+        labels="This program",lw=3)
+    plot!(θf,σf,labels="FRESCO",ls=:solid,lw=2,linealpha=0.8)
+    annotate!(60,1e0,text(L"\alpha+^{90}\mathrm{Zr}",24))
+    annotate!(70,0.2e0,text(L"E_{\mathrm{lab}}=79.5~\mathrm{MeV}",24))
 end
-# savefig(p0,"Fig\\α_Zr_Comparison.svg")
+savefig(p0,"Fig\\α_Zr_Comparison.svg")
 
 #绘制近远端散射截面
 begin
-    p1=plot(size = (800,600), minorgrid = true)
-    # title!(L"^{16}\mathrm{O}+^{12}\mathrm{C}~~\mathrm{at}~~ E_{\mathrm{lab}}=132.0~\mathrm{MeV}")
-    title!(L"\alpha+^{90}\mathrm{Zr}~~\mathrm{at}~~ E_{\mathrm{lab}}=79.5~\mathrm{MeV}")
-    xaxis!(L"\theta / \mathrm{deg}",(0,180))
+    p1=plot(size = (800,600), minorgrid = true,
+            legendfontsize = 12, tickfontsize = 12, guidefontsize = 18,
+            framestyle = :box, margins = 3mm)
+    xaxis!(L"\Theta_{\mathrm{c.m.}} (\mathrm{deg})",(0,180))
     yaxis!(L"\sigma/\sigma_{R}", (2e-6,2),:log)
     plot!(rad2deg.(θgrid), σ_total./σ_Ru,
         labels="Total",lw=2)
@@ -38,8 +41,10 @@ begin
         labels="Far", ls=:dash)
     plot!(rad2deg.(θgrid), σ_near./σ_Ru,
         labels="Near",ls=:dash)
+    annotate!(60,1e0,text(L"\alpha+^{90}\mathrm{Zr}",24))
+    annotate!(70,0.2e0,text(L"E_{\mathrm{lab}}=79.5~\mathrm{MeV}",24))
 end
-# savefig(p1,"Fig\\α_Zr_Scatter.svg")
+savefig(p1,"Fig\\α_Zr_Scatter.svg")
 
 ## 散射过程
 plt_l = 80

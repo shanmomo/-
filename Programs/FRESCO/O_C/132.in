@@ -1,8 +1,8 @@
 O16 + C12 @ 132 MeV;
 NAMELIST
 &FRESCO hcm=0.03 rmatch=100
-	jtmin=0.0 jtmax=100 absend= 0.01
-	thmin=0.00 thmax=180.00 thinc=1.00
+	jtmin=0.0 jtmax=102 absend= -0.01
+	thmin=0.00 thmax=180.00 thinc=0.50
 	chans=1 smats=2  xstabl=1
 	elab=132.0  /
 
@@ -15,5 +15,4 @@ NAMELIST
 &pot /
 &overlap /
 &coupling /
-
 
